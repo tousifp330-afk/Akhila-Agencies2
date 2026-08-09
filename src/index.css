@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   ERP Base Styles — Desktop-First Accounting Interface
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================================
+   ERP Component Classes
+   ============================================================ */
+
+@layer components {
+  /* Data table — core ERP table style */
+  .erp-table {
+    @apply w-full border-collapse text-table;
+  }
+  .erp-table thead {
+    @apply bg-slate-100 border-b-2 border-slate-200;
+  }
+  .erp-table thead th {
+    @apply px-4 py-2.5 text-left font-semibold text-slate-600 uppercase tracking-wide text-xs whitespace-nowrap;
+  }
+  .erp-table tbody tr {
+    @apply border-b border-slate-100 hover:bg-blue-50/40 transition-colors;
+  }
+  .erp-table tbody td {
+    @apply px-4 py-2.5 text-slate-700;
+  }
+  .erp-table .num {
+    @apply text-right font-mono text-sm tabular-nums;
+  }
+  .erp-table .clickable {
+    @apply cursor-pointer text-erp-primary hover:text-erp-primary-hover hover:underline;
+  }
+  .erp-table .amount-positive {
+    @apply text-erp-success;
+  }
+  .erp-table .amount-negative {
+    @apply text-erp-danger;
+  }
+
+  /* Card panel */
+  .erp-card {
+    @apply bg-white border border-erp-border rounded-lg shadow-sm;
+  }
+  .erp-card-header {
+    @apply px-5 py-3 border-b border-erp-border bg-slate-50/50 rounded-t-lg;
+  }
+  .erp-card-body {
+    @apply p-5;
+  }
+
+  /* Stat card */
+  .erp-stat {
+    @apply bg-white border border-erp-border rounded-lg p-5;
+  }
+  .erp-stat-label {
+    @apply text-xs font-medium text-slate-500 uppercase tracking-wide;
+  }
+  .erp-stat-value {
+    @apply text-2xl font-bold text-slate-900 mt-1;
+  }
+
+  /* Page header */
+  .erp-page-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  .erp-page-title {
+    @apply text-xl font-semibold text-slate-900;
+  }
+
+  /* Section title */
+  .erp-section-title {
+    @apply text-sm font-semibold text-slate-600 uppercase tracking-wide mb-3;
+  }
+
+  /* Form inputs */
+  .erp-input {
+    @apply px-3 py-2 border border-slate-300 rounded-md text-sm w-full
+           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+           placeholder:text-slate-400;
+  }
+  .erp-input-sm {
+    @apply px-2.5 py-1.5 text-xs;
+  }
+  .erp-select {
+    @apply erp-input appearance-none bg-white;
+  }
+
+  /* Buttons */
+  .erp-btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium
+           rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .erp-btn-primary {
+    @apply erp-btn bg-erp-primary text-white hover:bg-erp-primary-hover focus:ring-blue-500;
+  }
+  .erp-btn-secondary {
+    @apply erp-btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-400;
+  }
+  .erp-btn-danger {
+    @apply erp-btn bg-erp-danger text-white hover:bg-red-700 focus:ring-red-500;
+  }
+  .erp-btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .erp-btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* Badge */
+  .erp-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .erp-badge-blue {
+    @apply bg-blue-100 text-blue-800;
+  }
+  .erp-badge-green {
+    @apply bg-green-100 text-green-800;
+  }
+  .erp-badge-red {
+    @apply bg-red-100 text-red-800;
+  }
+  .erp-badge-yellow {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  .erp-badge-slate {
+    @apply bg-slate-100 text-slate-600;
+  }
+
+  /* Search bar */
+  .erp-search {
+    @apply relative;
+  }
+  .erp-search input {
+    @apply erp-input pl-9;
+  }
+  .erp-search-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4;
+  }
+
+  /* Voucher type badge colors */
+  .vtype-Sales { @apply bg-blue-100 text-blue-800; }
+  .vtype-Purchase { @apply bg-purple-100 text-purple-800; }
+  .vtype-Receipt { @apply bg-green-100 text-green-800; }
+  .vtype-Payment { @apply bg-orange-100 text-orange-800; }
+  .vtype-Journal { @apply bg-slate-100 text-slate-700; }
+  .vtype-Contra { @apply bg-cyan-100 text-cyan-800; }
+  .vtype-Debit-Note { @apply bg-red-100 text-red-800; }
+  .vtype-Credit-Note { @apply bg-emerald-100 text-emerald-800; }
+
+  /* Filter bar */
+  .erp-filter-bar {
+    @apply flex items-center gap-3 mb-4 flex-wrap;
+  }
+  .erp-filter-bar label {
+    @apply text-xs font-medium text-slate-500;
+  }
+  .erp-filter-bar .erp-input {
+    @apply w-auto min-w-[140px];
+  }
+
+  /* Pagination */
+  .erp-pagination {
+    @apply flex items-center justify-between mt-4 py-2;
+  }
+  .erp-pagination-info {
+    @apply text-sm text-slate-500;
+  }
+  .erp-pagination-btns {
+    @apply flex items-center gap-1;
+  }
+  .erp-pagination-btns button {
+    @apply px-3 py-1.5 text-sm border border-slate-300 rounded hover:bg-slate-50
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .erp-pagination-btns button.active {
+    @apply bg-erp-primary text-white border-erp-primary;
+  }
+
+  /* Empty state */
+  .erp-empty {
+    @apply text-center py-12 text-slate-400;
+  }
+}
