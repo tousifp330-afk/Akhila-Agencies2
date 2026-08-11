@@ -13,19 +13,23 @@ function extractItemList(parent: Record<string, unknown>, tagName: string): unkn
     const obj = val as Record<string, unknown>;
     const list = obj['LIST']; if (Array.isArray(list)) return list as unknown[];
     const coll = obj['COLLECTION']; if (Array.isArray(coll)) return coll as unknown[];
-    const env = obj['ENVELOPE'];
-    if (env && typeof env === 'object') {
-      const eo = env as Record<string, unknown>;
-      const eb = eo['BODY'] as Record<string, unknown> | undefined;
-      if (eb) {
-        const d = eb['DATA'] as Record<string, unknown> | undefined;
-        if (d) {
-          const dc = d['COLLECTION']; if (Array.isArray(dc)) return dc as unknown[];
-          const na = d['NA'] ?? d['AM']; if (Array.isArray(na)) return na as unknown[];
-        }
-      }
-    }
     if (Object.keys(obj).some(k => k === 'LEDGERNAME' || k === 'NAME')) return [obj];
+  }
+  return [];
+}
+
+function findLedgerArray(obj: Record<string, unknown>): unknown[] {
+  for (const key of Object.keys(obj)) {
+    const val = obj[key];
+    if (Array.isArray(val)) return val as unknown[];
+    if (val && typeof val === 'object') {
+      const inner = val as Record<string, unknown>;
+      if (Array.isArray(inner['LIST'])) return inner['LIST'] as unknown[];
+      if (Array.isArray(inner['DATA'])) return inner['DATA'] as unknown[];
+      if (Array.isArray(inner['COLLECTION'])) return inner['COLLECTION'] as unknown[];
+      const f = findLedgerArray(inner);
+      if (f.length > 0) return f;
+    }
   }
   return [];
 }
@@ -35,10 +39,13 @@ export function parseLedgers(xmlData: Record<string, unknown>): ParsedLedger[] {
   try {
     diagnoseXmlResponse('LEDGER', xmlData);
     const lm = extractTallyMessage(xmlData);
-    if (Object.keys(lm).length === 0) { console.log('[LedgerParser] No TALLYMESSAGE. Deep search...'); return deepSearch(xmlData); }
-    const ll = extractItemList(lm, 'LEDGER');
-    console.log(`[LedgerParser] Found ${ll.length} items in TALLYMESSAGE`);
-    if (ll.length === 0) { console.log('[LedgerParser] No LEDGER collection. Deep search...'); return deepSearch(xmlData); }
+    if (Object.keys(lm).length === 0) { console.log('[LedgerParser] No message. Deep search...'); return deepSearch(xmlData); }
+
+    let ll = extractItemList(lm, 'LEDGER');
+    if (ll.length === 0) ll = findLedgerArray(lm);
+    console.log(`[LedgerParser] Found ${ll.length} items`);
+    if (ll.length === 0) { console.log('[LedgerParser] Deep search...'); return deepSearch(xmlData); }
+
     for (const item of ll) {
       const l = item as Record<string, unknown>;
       if (!l || (!l['LEDGERNAME'] && !l['NAME'])) continue;
