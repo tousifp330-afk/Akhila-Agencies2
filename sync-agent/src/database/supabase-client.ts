@@ -25,11 +25,27 @@ export async function bulkUpsert(table: string, rows: Record<string, unknown>[],
 
 export async function getCompanyId(name: string): Promise<string | null> {
   console.log(`  [DB] Looking up company: "${name}"`);
-  const { data, error } = await getSupabaseClient().from('companies').select('id, name').ilike('name', name).maybeSingle();
+  const supabase = getSupabaseClient();
+
+  // Try exact name match
+  let { data, error } = await supabase.from('companies').select('id, name, tally_name').eq('name', name).maybeSingle();
+  if (data) { console.log(`  [DB] Found by name: ${data.name}`); return data.id; }
+
+  // Try tally_name match
+  ({ data, error } = await supabase.from('companies').select('id, name, tally_name').eq('tally_name', name).maybeSingle());
+  if (data) { console.log(`  [DB] Found by tally_name: ${data.tally_name}`); return data.id; }
+
+  // Try ilike on name
+  ({ data, error } = await supabase.from('companies').select('id, name').ilike('name', `%${name.substring(0, 20)}%`).maybeSingle());
+  if (data) { console.log(`  [DB] Found by ilike name: ${data.name}`); return data.id; }
+
+  // Try ilike on tally_name
+  ({ data, error } = await supabase.from('companies').select('id, tally_name').ilike('tally_name', `%${name.substring(0, 20)}%`).maybeSingle());
+  if (data) { console.log(`  [DB] Found by ilike tally_name: ${data.tally_name}`); return data.id; }
+
   if (error) console.error(`  [DB] Lookup error:`, error.message);
-  if (data) console.log(`  [DB] Found: ${data.name} (${data.id})`);
-  else console.log(`  [DB] No match for name="${name}"`);
-  return data?.id || null;
+  console.log(`  [DB] No match found`);
+  return null;
 }
 
 export async function getSyncState(companyId: string) {
